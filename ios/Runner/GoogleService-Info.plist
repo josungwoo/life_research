@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>437697743354-1rh7inekbr6btti20k5ubsk7eg3sglt0.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.437697743354-1rh7inekbr6btti20k5ubsk7eg3sglt0</string>
+	<key>API_KEY</key>
+	<string>AIzaSyD3gYP6qyTgwQ6ZnX9x67GzGjdxZ7lJoCQ</string>
+	<key>GCM_SENDER_ID</key>
+	<string>437697743354</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.lifeResearch</string>
+	<key>PROJECT_ID</key>
+	<string>life-research-6dbad</string>
+	<key>STORAGE_BUCKET</key>
+	<string>life-research-6dbad.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:437697743354:ios:cea134da80748c0516fc43</string>
+</dict>
+</plist>
