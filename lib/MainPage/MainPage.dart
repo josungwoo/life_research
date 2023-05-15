@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:life_research/CommunityPage/CommunityPage.dart';
 import 'package:life_research/ProfilePage/ProfilePage.dart';
+import 'package:life_research/MainPage/PersonalResearch.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -47,7 +48,13 @@ class _MainPageState extends State<MainPage> {
                       ),
                     ),
                     IconButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const PersonalResearch()),
+                        );
+                      },
                       icon: const Icon(Icons.chevron_right_sharp),
                       iconSize: 20,
                     ),
