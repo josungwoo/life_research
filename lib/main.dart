@@ -28,7 +28,7 @@ class _SplashPageState extends State<SplashPage> {
     super.initState();
     // Wait 3 seconds, then navigate to loginPage.
     // no animation when navigating to loginPage.
-    Timer(const Duration(milliseconds: 500), () {
+    Timer(const Duration(seconds: 1), () {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const LoginPage()),

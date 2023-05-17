@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:life_research/CommunityPage/CommunityPage.dart';
 import 'package:life_research/MainPage/mainPage.dart';
+import 'package:life_research/ProfilePage/Setting.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -11,15 +12,119 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   late int _selectedIndex; // 현재 선택된 페이지
+  var _userPrifile;
+  var _userRank = 'unRanked';
+  var _userPost;
+
+  //========================프로필start========================
+  Widget _profile_image([profile = 'https://picsum.photos/300']) {
+    return Container(
+      width: 100,
+      height: 100,
+      margin: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        image: DecorationImage(
+          fit: BoxFit.fill,
+          // 프로필 이미지 설정에 따른 변화
+          image: NetworkImage(profile), //profile image;
+        ),
+      ),
+    );
+  }
+  //========================프로필end========================
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        body: Center(
-          child: const Text('ProfilePage'),
+        appBar: AppBar(
+          centerTitle: true, //Title text 가운데 정렬
+          title: const Text(
+            'MyProfile',
+            style: TextStyle(color: Colors.black),
+          ),
+          actions: [
+            IconButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const SettingPage()),
+                );
+              },
+              icon: const Icon(Icons.settings),
+              color: Colors.black,
+            ),
+          ],
+          backgroundColor: Colors.transparent, //appBar 투명색
+          elevation: 0.0, //appBar 그림자 농도 설정 (값 0으로 제거)
+        ),
+        body: SingleChildScrollView(
+          //contents outfit
+          child: Container(
+            margin: EdgeInsets.only(left: 8, right: 8, top: 8),
+            //inner contents
+            child: Column(
+              children: [
+                Container(
+                  decoration: const BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(
+                        color: Colors.grey,
+                        width: 1.0,
+                      ),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          //profile 설정에 따른 이미지 변화 함수
+                          _profile_image('https://picsum.photos/200'),
+                          //이름과 이메일
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: const [
+                              Text(
+                                'Name',
+                                style: TextStyle(
+                                    fontSize: 25, fontWeight: FontWeight.bold),
+                              ),
+                              Text('testemain@gmail.com')
+                            ],
+                          ),
+                        ],
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        //rank system
+                        children: [
+                          Image.network(
+                              'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQiS3ZUuPNHJR0eRIQIDT2C5pa-ywIejAj4abLKe5fQ&s',
+                              width: 50),
+                          Text(
+                            _userRank,
+                            style: TextStyle(
+                                fontSize: 15, fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
+                ),
+                Row(
+                  children: [],
+                )
+              ],
+            ),
+          ),
         ),
         bottomNavigationBar: BottomNavigationBar(
-          currentIndex: 2,
+          currentIndex: 2, // 현재 선택된 페이지
           onTap: (int index) {
             // 누르면 해당 페이지로 이동
             setState(() {

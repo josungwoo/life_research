@@ -3,6 +3,8 @@ import 'package:life_research/CommunityPage/CommunityPage.dart';
 import 'package:life_research/ProfilePage/ProfilePage.dart';
 import 'package:life_research/MainPage/PersonalResearch.dart';
 
+export 'package:life_research/config.dart'; //export 는 다른 파일에서 이 파일을 import 할 때, 이 파일의 모든 것을 가져올 수 있게 해준다.
+
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
 
@@ -10,7 +12,7 @@ class MainPage extends StatefulWidget {
   State<MainPage> createState() => _MainPageState();
 }
 
-//========test code area========
+//========================test code area========================
 
 Widget listitem(number) {
   return Container(
@@ -33,115 +35,117 @@ class _MainPageState extends State<MainPage> {
     return MaterialApp(
       home: Scaffold(
         body: SafeArea(
-          child: Column(
-            children: [
-              Container(
-                margin: const EdgeInsets.only(top: 24, left: 16),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "$name\n님을 위해 연구해 봤어요 :)",
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const PersonalResearch()),
-                        );
-                      },
-                      icon: const Icon(Icons.chevron_right_sharp),
-                      iconSize: 20,
-                    ),
-                  ],
-                ),
-              ),
-              Column(
-                children: [
-                  Row(
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                Container(
+                  margin: const EdgeInsets.only(top: 24, left: 16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      //rounded 2box in icon and text
-                      Expanded(
-                        child: Container(
-                          height: 100,
-                          margin: const EdgeInsets.only(
-                              top: 16, left: 16, right: 8),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            color: Colors.blue[800],
-                          ),
+                      Text(
+                        "$name\n님을 위해 연구해 봤어요 :)",
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                      Expanded(
-                        child: Container(
-                          height: 100,
-                          margin: const EdgeInsets.only(
-                              top: 16, left: 8, right: 16),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            color: Colors.blue[200],
-                          ),
-                          // child: const Text('값 넣을 예정임'),
-                        ),
+                      IconButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const PersonalResearch()),
+                          );
+                        },
+                        icon: const Icon(Icons.chevron_right_sharp),
+                        iconSize: 20,
                       ),
                     ],
                   ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Container(
-                          height: 100,
-                          margin: const EdgeInsets.only(
-                              top: 16, left: 16, right: 8),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            color: Colors.lightBlue[400],
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Container(
-                          height: 100,
-                          margin: const EdgeInsets.only(
-                              top: 16, left: 8, right: 16),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            color: Colors.blue,
-                          ),
-                        ),
-                      ),
-                    ],
-                  )
-                ],
-              ),
-              Container(
-                margin: const EdgeInsets.only(top: 24, left: 16),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                ),
+                Column(
                   children: [
-                    const Text(
-                      "Hot한 정보들이에요!",
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    Row(
+                      children: [
+                        //rounded 2box in icon and text
+                        Expanded(
+                          child: Container(
+                            height: 100,
+                            margin: const EdgeInsets.only(
+                                top: 16, left: 16, right: 8),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              color: Colors.blue[800],
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Container(
+                            height: 100,
+                            margin: const EdgeInsets.only(
+                                top: 16, left: 8, right: 16),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              color: Colors.blue[200],
+                            ),
+                            // child: const Text('값 넣을 예정임'),
+                          ),
+                        ),
+                      ],
                     ),
-                    IconButton(
-                      onPressed: () {},
-                      icon: const Icon(Icons.chevron_right_sharp),
-                      iconSize: 20,
-                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            height: 100,
+                            margin: const EdgeInsets.only(
+                                top: 16, left: 16, right: 8),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              color: Colors.lightBlue[400],
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Container(
+                            height: 100,
+                            margin: const EdgeInsets.only(
+                                top: 16, left: 8, right: 16),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              color: Colors.blue,
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
                   ],
                 ),
-              ),
-              // 아이템들을 스크롤 하면 각각의 요소들이 글자요소에 붙게 만들어줘
-              Expanded(
-                child: ListView(
+                Container(
+                  margin: const EdgeInsets.only(top: 24, left: 16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      //아래의 Text 함수를 스크롤 할 시 상단에 붙게 만드는 방법
+                      //https://stackoverflow.com/questions/51188202/how-to-make-a-text-stay-at-the-top-of-the-screen-in-flutter
+                      const Text(
+                        "Hot한 정보들이에요!",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () {},
+                        icon: const Icon(Icons.chevron_right_sharp),
+                        iconSize: 20,
+                      ),
+                    ],
+                  ),
+                ),
+                // 아이템들을 스크롤 하면 각각의 요소들이 글자요소에 붙게 만들어줘
+                Column(
                   children: [
                     listitem(100),
                     listitem(200),
@@ -150,8 +154,8 @@ class _MainPageState extends State<MainPage> {
                     listitem(500),
                   ],
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
         bottomNavigationBar: BottomNavigationBar(
