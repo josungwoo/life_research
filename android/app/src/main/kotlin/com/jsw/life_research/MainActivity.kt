@@ -1,4 +1,4 @@
-package com.example.life_research
+package com.jsw.life_research
 
 import io.flutter.embedding.android.FlutterActivity
 

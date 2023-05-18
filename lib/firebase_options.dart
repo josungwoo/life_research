@@ -51,7 +51,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyCMCftOZKXYYzpFoeHkQVi2p8PNqt8GWoI',
-    appId: '1:437697743354:android:3d76afed7e93bc0816fc43',
+    appId: '1:437697743354:android:e32f7bbc39c1524f16fc43',
     messagingSenderId: '437697743354',
     projectId: 'life-research-6dbad',
     storageBucket: 'life-research-6dbad.appspot.com',
@@ -59,11 +59,12 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyD3gYP6qyTgwQ6ZnX9x67GzGjdxZ7lJoCQ',
-    appId: '1:437697743354:ios:cea134da80748c0516fc43',
+    appId: '1:437697743354:ios:2314912db342895216fc43',
     messagingSenderId: '437697743354',
     projectId: 'life-research-6dbad',
     storageBucket: 'life-research-6dbad.appspot.com',
-    iosClientId: '437697743354-1rh7inekbr6btti20k5ubsk7eg3sglt0.apps.googleusercontent.com',
-    iosBundleId: 'com.example.lifeResearch',
+    androidClientId: '437697743354-i51qtq0hv0bqnujdk2i348ku2s071lur.apps.googleusercontent.com',
+    iosClientId: '437697743354-s7jvjrt9cid4h61eekt5s8g0h8gqoj8b.apps.googleusercontent.com',
+    iosBundleId: 'com.jsw.lifeResearch',
   );
 }
