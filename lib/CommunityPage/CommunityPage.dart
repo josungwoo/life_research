@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:life_research/CommunityPage/SearchPage.dart';
 import 'package:life_research/ProfilePage/ProfilePage.dart';
 import 'package:life_research/MainPage/mainPage.dart';
 
@@ -133,7 +134,7 @@ class _ComPageState extends State<ComPage> {
               is_image(), // row : 최 상단
             ]),
             Container(
-              height: 20,
+              height: 25,
               padding: const EdgeInsets.only(left: 8, right: 8),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -142,7 +143,9 @@ class _ComPageState extends State<ComPage> {
                   Row(
                     children: [
                       const Text('닉네임', style: TextStyle(fontSize: 13)),
-                      const Icon(Icons.circle, size: 5),
+                      Container(
+                          margin: EdgeInsets.only(left: 4, right: 4),
+                          child: const Icon(Icons.circle, size: 5)),
                       const Text('21시간 전', style: TextStyle(fontSize: 13)),
                       const Icon(Icons.circle, size: 5),
                       Container(
@@ -193,7 +196,12 @@ class _ComPageState extends State<ComPage> {
             ),
             actions: [
               IconButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const SearchPage()));
+                },
                 icon: const Icon(Icons.search),
                 color: Colors.black,
               ),
@@ -322,19 +330,5 @@ class _ComPageState extends State<ComPage> {
         ),
       ),
     );
-  }
-}
-
-class SearchMode extends StatefulWidget {
-  const SearchMode({super.key});
-
-  @override
-  State<SearchMode> createState() => _SearchModeState();
-}
-
-class _SearchModeState extends State<SearchMode> {
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
   }
 }
