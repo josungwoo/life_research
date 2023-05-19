@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:life_research/Auth/PhoneAuth.dart';
+//pages
+import 'package:life_research/Auth/RegisterPage.dart';
 import 'package:life_research/MainPage/MainPage.dart'; // 메인페이지로 이동
+//plugins
 import 'package:firebase_auth/firebase_auth.dart'; // 사용자 인증
-import 'package:google_sign_in/google_sign_in.dart'; // 구글 로그인
 import 'package:cloud_firestore/cloud_firestore.dart'; // 데이터베이스
+import 'package:google_sign_in/google_sign_in.dart'; // 구글 로그인
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -16,8 +20,7 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   FirebaseFirestore userDB = FirebaseFirestore.instance;
-  bool _isVerifed = false;
-
+  late String baseUserUid;
   /*
   User/uid/
   displayName "캬하"
@@ -37,9 +40,8 @@ class _LoginPageState extends State<LoginPage> {
         .doc(FirebaseAuth.instance.currentUser!.uid.toString())
         .get();
     final bool doesDocExist = doc.exists;
+    // 로그인 했는지 확인
     if (FirebaseAuth.instance.currentUser != null) {
-      print('로그인함');
-      // 로그인 했는지 확인
       // 로그인 했으면
       if (doesDocExist == true) {
         print('문서있음');
@@ -47,6 +49,10 @@ class _LoginPageState extends State<LoginPage> {
         if (doc['isVerified'] == false) {
           // 본인인증 페이지로 이동
           print('본인인증 안됨');
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => PhoneAuth(baseUserUid)),
+          );
         } else {
           // 메인페이지로 이동
           print('본인인증 됨');
@@ -84,7 +90,8 @@ class _LoginPageState extends State<LoginPage> {
       accessToken: googleAuth?.accessToken,
       idToken: googleAuth?.idToken,
     );
-
+    baseUserUid = FirebaseAuth.instance.currentUser!.uid.toString();
+    print(baseUserUid);
     // Ko : 자격 증명을 이용해, Firebase에 로그인합니다.
     return await FirebaseAuth.instance.signInWithCredential(credential);
   }
@@ -141,7 +148,14 @@ class _LoginPageState extends State<LoginPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  //register
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const RegisterPage()),
+                  );
+                },
                 child: const Text('Register'),
               ),
               TextButton(
@@ -160,8 +174,9 @@ class _LoginPageState extends State<LoginPage> {
             onPressed: () async {
               // 구글 로그인 버튼 클릭 시
               await signInWithGoogle();
+
               setState(() {});
-              _checkUser();
+              _checkUser(); // 로그인 했는지 확인
               // 만약 로그인 했으면
               // User콜렉션에 기본 유저정보가 있는지 확인하고 없으면 생성
               // 있으면 본인인증 여부를 확인하고 인증되지 않았으면 본인인증 페이지로 이동 | 인증되었으면 메인페이지로 이동
