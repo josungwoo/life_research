@@ -23,8 +23,16 @@ class _LoginPageState extends State<LoginPage> {
   late String baseUserUid; // 로그인한 유저의 uid
 
   Future<void> loginUser() async {
-    await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: _emailController.text, password: _passwordController.text);
+    await FirebaseAuth.instance
+        .signInWithEmailAndPassword(
+            email: _emailController.text, password: _passwordController.text)
+        .catchError((e) {
+      if (e.code == 'user-not-found') {
+        print('No user found for that email.');
+      } else if (e.code == 'wrong-password') {
+        print('Wrong password provided for that user.');
+      }
+    });
     baseUserUid = FirebaseAuth.instance.currentUser!.uid.toString();
     print("asdasdasdadas" + baseUserUid);
   }
@@ -53,7 +61,9 @@ class _LoginPageState extends State<LoginPage> {
           if (doc['infoAgree'] == false) {
             print('본인인증 됨 == 정보제공 동의 안함');
           } else
-            print('본인인증 됨\n정보제공 동의함');
+            print('본인인증 됨 정보제공 동의함 => 메인페이지로 이동');
+          Navigator.pushReplacement(
+              context, MaterialPageRoute(builder: (context) => MainPage()));
         }
       } else {
         // 로그인 했는데 문서가 없으면
@@ -160,16 +170,16 @@ class _LoginPageState extends State<LoginPage> {
                 child: const Text('Register'),
               ),
               TextButton(
-                onPressed: () {
-                  FirebaseAuth.instance.signOut();
+                onPressed: () async {
                   // FirebaseAuth.instance.signInWithEmailAndPassword(
                   //     email: _emailController.text,
                   //     password: _passwordController.text);
                   // _checkUser();
-
-                  //logout
-                  // 로그인 버튼 클릭 시
-                  // FirebaseAuth.instance.signInWithEmailAndPassword(email: emao, password: password);
+                  // FirebaseAuth.instance.signOut();
+                  //로그인 -> baseUserUid에 로그인한 유저의 uid 저장 -> _checkUser()로 유저정보 확인
+                  print(FirebaseAuth.instance.currentUser);
+                  await loginUser();
+                  _checkUser();
                 },
                 child: const Text('Login'),
               ),

@@ -1,6 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import 'package:cloud_firestore/cloud_firestore.dart'; // 데이터베이스
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+import 'LoginPage.dart'; // 데이터베이스
 
 class PersonalInfoPage extends StatefulWidget {
   final String baseUserUid;
@@ -75,6 +78,11 @@ User/uid/
                 TextFieldCustom(_displayName, '닉네임'),
                 TextFieldCustom(_gender, '성별'),
                 TextFieldCustom(_photoURL, '프로필 사진'),
+                TextButton(
+                    onPressed: () {
+                      print(FirebaseAuth.instance.currentUser);
+                    },
+                    child: Text('debug'))
               ],
             )),
             bottomSheet: Container(
@@ -83,9 +91,10 @@ User/uid/
                 children: [
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: () {
+                      onPressed: () async {
+                        //TODO: 유저 정보 업데이트
                         if (true) {}
-                        userDB
+                        await userDB
                             .collection("users")
                             .doc(widget.baseUserUid)
                             .update({
@@ -95,6 +104,21 @@ User/uid/
                           'gender': _gender.text,
                           'phoneNumber': _phoneNumber,
                         });
+                        await FirebaseAuth.instance.currentUser!.delete();
+                        if (FirebaseAuth.instance.currentUser == null) {
+                          print("계정 삭제 성공");
+                        } else {
+                          print(FirebaseAuth.instance.currentUser);
+                          print("로그아웃 실패");
+                        }
+                        //goto LoginPage and delete user
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                                builder: (BuildContext context) =>
+                                    const LoginPage()),
+                            (route) => false);
+
                         print("data updated");
                       },
                       child: const Text('완료'),

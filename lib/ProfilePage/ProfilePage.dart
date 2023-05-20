@@ -1,3 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/material.dart';
 import 'package:life_research/CommunityPage/CommunityPage.dart';
 import 'package:life_research/MainPage/mainPage.dart';
@@ -11,6 +14,11 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  FirebaseFirestore userDB = FirebaseFirestore.instance; // 유저 DB
+  late Future<DocumentSnapshot<Map<String, dynamic>>> userinfo = userDB
+      .collection('users')
+      .doc(FirebaseAuth.instance.currentUser!.uid.toString())
+      .get();
   late int _selectedIndex; // 현재 선택된 페이지
   var _userPrifile;
   var _userRank = 'unRanked';
@@ -88,11 +96,11 @@ class _ProfilePageState extends State<ProfilePage> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: const [
+                            children: [
                               Text(
-                                'Name',
+                                'asd',
                                 style: TextStyle(
-                                    fontSize: 25, fontWeight: FontWeight.bold),
+                                    fontSize: 10, fontWeight: FontWeight.bold),
                               ),
                               Text('testemain@gmail.com')
                             ],
@@ -117,7 +125,14 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
                 Row(
-                  children: [],
+                  children: [
+                    TextButton(
+                        onPressed: () async {
+                          print(userinfo.then((value) => value.data()));
+                          // print(a['name']);
+                        },
+                        child: Text('test'))
+                  ],
                 )
               ],
             ),
