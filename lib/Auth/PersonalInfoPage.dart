@@ -84,6 +84,7 @@ User/uid/
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {
+                        if (true) {}
                         userDB
                             .collection("users")
                             .doc(widget.baseUserUid)
@@ -94,12 +95,7 @@ User/uid/
                           'gender': _gender.text,
                           'phoneNumber': _phoneNumber,
                         });
-                        print(_displayName.text);
-                        print(_gender.text);
-                        print(_name.text);
-                        print(_phoneNumber);
-                        print(_photoURL.text);
-                        print(widget.baseUserUid);
+                        print("data updated");
                       },
                       child: const Text('완료'),
                     ),

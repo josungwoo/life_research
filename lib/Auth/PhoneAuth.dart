@@ -1,8 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:life_research/Auth/PersonalInfoPage.dart';
-import 'package:life_research/Auth/PhoneAuth.dart';
 
 class PhoneAuth extends StatefulWidget {
   final String baseUserUid;
@@ -16,7 +16,7 @@ class _PhoneAuthState extends State<PhoneAuth> {
   final TextEditingController _phone1 = TextEditingController(); // 전화번호 010
   final TextEditingController _phone2 = TextEditingController(); // 전화번호 0000(1)
   final TextEditingController _phone3 = TextEditingController(); // 전화번호 0000(2)
-  final TextEditingController _authNumber = TextEditingController(); // 인증번호
+  final TextEditingController _authNumber = TextEditingController(); //인증번호 입력
   late String _myPhoneNumber;
   bool _isCalled = false; // 인증번호 전송 버튼을 눌렀는가? 인증번호 전송박스를 표시하기 위해
   bool _isVerified = false; // 본인인증이 되었는가?
@@ -24,7 +24,53 @@ class _PhoneAuthState extends State<PhoneAuth> {
   bool _nextButton = false; // 다음 버튼 활성화
   bool _canVerified = false; // 인증번호를 받을 수 있는가?
   bool _canSendAuth = false; // 인증번호를 보낼 수 있는가?
-  late String _verificationId;
+  late String _verificationId; // 인증번호
+  FirebaseFirestore userDB = FirebaseFirestore.instance; // 유저정보 데이터베이스
+
+  void infoAgree() {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('알림'),
+            content: Text('개인정보 제공 동의가 필요합니다.'),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    print("개인정보 제공 동의 없으면 로그인 불가");
+                    Navigator.pop(context);
+                  },
+                  child: Text('취소')),
+              TextButton(
+                  onPressed: () {
+                    userDB
+                        .collection('users')
+                        .doc(widget.baseUserUid)
+                        .update({'infoAgree': true});
+                    Navigator.pop(context);
+                  },
+                  child: Text('확인'))
+            ],
+          );
+        });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    var userdb = userDB.collection('users').doc(widget.baseUserUid).get();
+    userdb.then((value) {
+      // 정보 제공 동의여부
+      if (value['infoAgree'] == true) {
+        print('정보 제공 동의함');
+        //동의했으면
+      } else {
+        //동의하지 않았으면
+        print('정보 제공 미동의');
+        infoAgree();
+      }
+    });
+  }
 
   Widget isCalled(isCalled) {
     // 인증번호 전송 박스
@@ -271,13 +317,20 @@ class _PhoneAuthState extends State<PhoneAuth> {
                             _nextButton ? Colors.blue : Colors.grey.shade300)),
                     onPressed: () {
                       (_isVerified && _isOver14) == true
-                          ? Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => PersonalInfoPage(
-                                      widget.baseUserUid,
-                                      _myPhoneNumber))) // 휴대폰 인증 계정을 삭제 하고
-                          : print("인증이 안됨${widget.baseUserUid}");
+                          ? userDB
+                              .collection('users')
+                              .doc(widget.baseUserUid)
+                              .get()
+                              .then((value) => value['infoAgree'] == true
+                                  ? Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              PersonalInfoPage(
+                                                  widget.baseUserUid,
+                                                  _myPhoneNumber)))
+                                  : infoAgree())
+                          : print("인증번호 확인 및 만 14세 이상이 아님");
                     },
                     child: const Text('다음'),
                   ),

@@ -17,23 +17,18 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   // 컨트롤러 추가
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-  FirebaseFirestore userDB = FirebaseFirestore.instance;
-  late String baseUserUid;
-  /*
-  User/uid/
-  displayName "캬하"
-  isVerified false
-  gender "남"
-  name "조성우"
-  email "cso3297@gmail.com"
-  phoneNumber 1051563297
-  photoURL ""
-  
-  */
-  // 만약 로그인 했으면
-  // User콜렉션에 기본 유저정보가 있는지 확인하고 없으면 생성
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  FirebaseFirestore userDB = FirebaseFirestore.instance; // 유저정보 데이터베이스
+  late String baseUserUid; // 로그인한 유저의 uid
+
+  Future<void> loginUser() async {
+    await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: _emailController.text, password: _passwordController.text);
+    baseUserUid = FirebaseAuth.instance.currentUser!.uid.toString();
+    print("asdasdasdadas" + baseUserUid);
+  }
+
   Future<void> _checkUser() async {
     final doc = await FirebaseFirestore.instance
         .collection('users')
@@ -55,7 +50,10 @@ class _LoginPageState extends State<LoginPage> {
           );
         } else {
           // 메인페이지로 이동
-          print('본인인증 됨');
+          if (doc['infoAgree'] == false) {
+            print('본인인증 됨 == 정보제공 동의 안함');
+          } else
+            print('본인인증 됨\n정보제공 동의함');
         }
       } else {
         // 로그인 했는데 문서가 없으면
@@ -65,9 +63,14 @@ class _LoginPageState extends State<LoginPage> {
             .doc(FirebaseAuth.instance.currentUser!.uid.toString())
             .set({
           'isVerified': false,
+          'infoAgree': false,
           'email': "${FirebaseAuth.instance.currentUser!.email}",
         });
-        print('문서생성');
+        print('문서생성, 본인인증하러가기');
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => PhoneAuth(baseUserUid)),
+        );
       }
     } else {
       print("로그인안함");
@@ -75,6 +78,17 @@ class _LoginPageState extends State<LoginPage> {
     // User콜렉션에 기본 유저정보가 있는지 확인하고 없으면 생성
     // 있으면 본인인증 여부를 확인하고 인증되지 않았으면 본인인증 페이지로 이동 | 인증되었으면 메인페이지로 이동
   }
+//if 로그인
+  //  if 유저정보 있으면
+  //    if 본인인증 되어있으면
+  //      메인페이지로 이동
+  //    else
+  //      본인인증 페이지로 이동
+  //  else
+  //    유저정보 생성
+  //    본인인증 페이지로 이동
+  //else
+  //  로그인 페이지로 이동
 
   //구글 로그인 함수
   Future<UserCredential> signInWithGoogle() async {
@@ -90,8 +104,6 @@ class _LoginPageState extends State<LoginPage> {
       accessToken: googleAuth?.accessToken,
       idToken: googleAuth?.idToken,
     );
-    baseUserUid = FirebaseAuth.instance.currentUser!.uid.toString();
-    print(baseUserUid);
     // Ko : 자격 증명을 이용해, Firebase에 로그인합니다.
     return await FirebaseAuth.instance.signInWithCredential(credential);
   }
@@ -103,17 +115,6 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    // FirebaseAuth.instance.authStateChanges().listen((User? user) {
-    //   if (user != null) {
-    //     print(user.photoURL); flutter: https://lh3.googleusercontent.com/a/AGNmyxb2bfN0W8hz5Q4ybmI-L1QWR-qcQyIgdtOsr9hn=s96-c
-    //     print(user.displayName); flutter: Kya-Ha
-    //     print(user.email);flutter: cso3297@gmail.com
-    //     print(user.emailVerified); true
-    //     print(user.phoneNumber); null
-    //     print(user.isAnonymous); false
-    //   }
-    // });
-
     return MaterialApp(
         home: Scaffold(
       body: SafeArea(
@@ -130,7 +131,7 @@ class _LoginPageState extends State<LoginPage> {
           const Text('Life Research'),
           TextField(
             // 컨트롤러 추가
-            controller: emailController,
+            controller: _emailController,
             decoration: InputDecoration(
               border: OutlineInputBorder(),
               labelText: 'Email',
@@ -138,7 +139,7 @@ class _LoginPageState extends State<LoginPage> {
           ),
           TextField(
             //컨트롤러 추가
-            controller: passwordController,
+            controller: _passwordController,
             decoration: InputDecoration(
               border: OutlineInputBorder(),
               labelText: 'Password',
@@ -160,10 +161,15 @@ class _LoginPageState extends State<LoginPage> {
               ),
               TextButton(
                 onPressed: () {
-                  //logout
                   FirebaseAuth.instance.signOut();
+                  // FirebaseAuth.instance.signInWithEmailAndPassword(
+                  //     email: _emailController.text,
+                  //     password: _passwordController.text);
+                  // _checkUser();
+
+                  //logout
                   // 로그인 버튼 클릭 시
-                  // FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
+                  // FirebaseAuth.instance.signInWithEmailAndPassword(email: emao, password: password);
                 },
                 child: const Text('Login'),
               ),
@@ -173,15 +179,12 @@ class _LoginPageState extends State<LoginPage> {
           OutlinedButton(
             onPressed: () async {
               // 구글 로그인 버튼 클릭 시
-              await signInWithGoogle();
-
-              setState(() {});
-              _checkUser(); // 로그인 했는지 확인
-              // 만약 로그인 했으면
-              // User콜렉션에 기본 유저정보가 있는지 확인하고 없으면 생성
-              // 있으면 본인인증 여부를 확인하고 인증되지 않았으면 본인인증 페이지로 이동 | 인증되었으면 메인페이지로 이동
-
-              // 디버그용 이동
+              await signInWithGoogle(); // 구글 회원가입 OR 로그인
+              setState(() {
+                baseUserUid = FirebaseAuth.instance.currentUser!.uid.toString();
+                print(baseUserUid);
+              }); // 화면 갱신
+              _checkUser(); // 유저정보 확인
             },
             child: const Text('Google'),
           ),

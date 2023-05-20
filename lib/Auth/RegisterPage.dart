@@ -17,7 +17,8 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _passwordController2 = TextEditingController();
   FirebaseFirestore userDB = FirebaseFirestore.instance; // 유저 db에 접속
   bool hiddenPassword = true, hiddenPassword2 = true;
-  String baseUserUid = FirebaseAuth.instance.currentUser!.uid.toString();
+  late String baseUserUid;
+
   Future<void> _checkUser() async {
     final doc = await FirebaseFirestore.instance
         .collection('users')
@@ -39,7 +40,10 @@ class _RegisterPageState extends State<RegisterPage> {
           );
         } else {
           // 메인페이지로 이동
-          print('본인인증 됨');
+          if (doc['infoAgree'] == false) {
+            print('본인인증 됨 == 정보제공 동의 안함');
+          } else
+            print('본인인증 됨\n정보제공 동의함');
         }
       } else {
         // 로그인 했는데 문서가 없으면
@@ -49,15 +53,32 @@ class _RegisterPageState extends State<RegisterPage> {
             .doc(FirebaseAuth.instance.currentUser!.uid.toString())
             .set({
           'isVerified': false,
+          'infoAgree': false,
           'email': "${FirebaseAuth.instance.currentUser!.email}",
         });
-        print('문서생성');
+        print('문서생성, 본인인증하러가기');
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  PhoneAuth(baseUserUid)), // baseUserUid 가 초기화 되지 않고 넘어가는 현상 발생
+        );
       }
     } else {
       print("로그인안함");
     }
     // User콜렉션에 기본 유저정보가 있는지 확인하고 없으면 생성
     // 있으면 본인인증 여부를 확인하고 인증되지 않았으면 본인인증 페이지로 이동 | 인증되었으면 메인페이지로 이동
+  }
+
+  Future<String> loginUser() async {
+    await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: _emailController.text, password: _passwordController.text);
+    setState(() {
+      baseUserUid = FirebaseAuth.instance.currentUser!.uid.toString();
+    });
+    print("asdasdasdadas" + baseUserUid);
+    return FirebaseAuth.instance.currentUser!.uid.toString();
   }
 
   @override
@@ -147,18 +168,23 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                 ),
                 child: TextButton(
-                  onPressed: () {
+                  onPressed: () async {
                     //if password == password2
                     //register
                     //email 과 password 를 통해 firebaseAuth 회원가임
-                    FirebaseAuth.instance
+                    await FirebaseAuth.instance
                         .createUserWithEmailAndPassword(
                             email: _emailController.text,
                             password: _passwordController.text)
                         .then((value) {
+                      baseUserUid =
+                          FirebaseAuth.instance.currentUser!.uid.toString();
+                      loginUser();
+
+                      _checkUser();
                       //회원가입 성공
                       //회원가입 성공시 User 콜렉션에 기본 유저정보가 있는지 확인하고 없으면 생성
-                      _checkUser();
+
                       //회원가입 성공시 firebaseAuth 에서 자동으로 로그인 되기 때문에
                       //로그인 페이지로 이동
                       print("회원과입 성공");
@@ -166,8 +192,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       if (e.code == 'weak-password') {
                         print('The password provided is too weak.');
                       } else if (e.code == 'email-already-in-use') {
-                        print('The account already exists for that email.');
-                        _checkUser();
+                        print('이미 회원가입 한 계정입니다');
                       } else if (e.code == 'invalid-email') {
                         print('The email address is badly formatted.');
                       } else if (e.code == 'operation-not-allowed') {
@@ -178,9 +203,6 @@ class _RegisterPageState extends State<RegisterPage> {
                       //회원가입 실패시 에러 메시지 출력
                       //에러 메시지는 e.message 에 있음
                     });
-                    //else
-                    //show error message
-                    //toasr error message
                     _passwordController.text == _passwordController2.text
                         ? print("same")
                         : print("not same");
