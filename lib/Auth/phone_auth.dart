@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:life_research/Auth/PersonalInfoPage.dart';
+import 'package:life_research/Auth/personal_info_page.dart';
 
 class PhoneAuth extends StatefulWidget {
   final String baseUserUid;

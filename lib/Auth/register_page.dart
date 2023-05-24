@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:firebase_auth/firebase_auth.dart'; // 사용자 인증
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:life_research/Auth/PhoneAuth.dart'; // 데이터베이스
+import 'package:life_research/Auth/phone_auth.dart'; // 데이터베이스
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});

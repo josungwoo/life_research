@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 import 'package:flutter/material.dart';
 import 'package:life_research/CommunityPage/CommunityPage.dart';
@@ -15,17 +16,35 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   FirebaseFirestore userDB = FirebaseFirestore.instance; // 유저 DB
-  late Future<DocumentSnapshot<Map<String, dynamic>>> userinfo = userDB
-      .collection('users')
-      .doc(FirebaseAuth.instance.currentUser!.uid.toString())
-      .get();
   late int _selectedIndex; // 현재 선택된 페이지
-  var _userPrifile;
-  var _userRank = 'unRanked';
-  var _userPost;
+  final References = FirebaseStorage.instance;
+
+  final _userRank = 'unRanked';
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  getUserData() async {
+    var datas = await userDB
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser!.uid.toString())
+        .get()
+        .then((value) => value.data() as Map<String, dynamic>);
+    return datas; // 현재 유저 정보를 Map 형태로 반환 함
+  }
 
   //========================프로필start========================
-  Widget _profile_image([profile = 'https://picsum.photos/300']) {
+  Future<dynamic> downloadURLExample() async {
+    String downloadURL = await References.ref(
+            'users/${FirebaseAuth.instance.currentUser!.uid.toString()}/profileImage')
+        .getDownloadURL();
+    print(downloadURL);
+    return downloadURL;
+  }
+
+  Widget _profile_image(url) {
     return Container(
       width: 100,
       height: 100,
@@ -33,14 +52,22 @@ class _ProfilePageState extends State<ProfilePage> {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         image: DecorationImage(
-          fit: BoxFit.fill,
-          // 프로필 이미지 설정에 따른 변화
-          image: NetworkImage(profile), //profile image;
-        ),
+            fit: BoxFit.fill,
+            // 프로필 이미지 설정에 따른 변화
+            image: NetworkImage(url)),
       ),
     );
   }
   //========================프로필end========================
+
+  Widget loadingPage() {
+    return Center(
+      child: Container(
+        color: Colors.white,
+        child: const Text('loading'),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,8 +75,8 @@ class _ProfilePageState extends State<ProfilePage> {
       home: Scaffold(
         appBar: AppBar(
           centerTitle: true, //Title text 가운데 정렬
-          title: const Text(
-            'MyProfile',
+          title: Text(
+            'Profile',
             style: TextStyle(color: Colors.black),
           ),
           actions: [
@@ -67,76 +94,117 @@ class _ProfilePageState extends State<ProfilePage> {
           backgroundColor: Colors.transparent, //appBar 투명색
           elevation: 0.0, //appBar 그림자 농도 설정 (값 0으로 제거)
         ),
-        body: SingleChildScrollView(
-          //contents outfit
-          child: Container(
-            margin: EdgeInsets.only(left: 8, right: 8, top: 8),
-            //inner contents
-            child: Column(
-              children: [
-                Container(
-                  decoration: const BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(
-                        color: Colors.grey,
-                        width: 1.0,
-                      ),
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
+        body: FutureBuilder(
+          future: getUserData(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData == false) {
+              return Center(child: CircularProgressIndicator());
+            }
+            //error가 발생하게 될 경우 반환하게 되는 부분
+            else if (snapshot.hasError) {
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  'Error: ${snapshot.error}',
+                  style: TextStyle(fontSize: 15),
+                ),
+              );
+            } else {
+              var userdata = snapshot.data as Map<String, dynamic>;
+              return SingleChildScrollView(
+                //contents outfit
+                child: Container(
+                  margin: EdgeInsets.only(left: 8, right: 8, top: 8),
+                  //inner contents
+                  child: Column(
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          //profile 설정에 따른 이미지 변화 함수
-                          _profile_image('https://picsum.photos/200'),
-                          //이름과 이메일
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              Text(
-                                'asd',
-                                style: TextStyle(
-                                    fontSize: 10, fontWeight: FontWeight.bold),
-                              ),
-                              Text('testemain@gmail.com')
-                            ],
+                      Container(
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: Colors.grey,
+                              width: 1.0,
+                            ),
                           ),
-                        ],
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                //profile 설정에 따른 이미지 변화 함수
+                                FutureBuilder(
+                                  future: downloadURLExample(),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.hasData) {
+                                      return _profile_image(snapshot.data);
+                                    } else {
+                                      return Center(
+                                          child: CircularProgressIndicator());
+                                    }
+                                  },
+                                ),
+
+                                //이름과 이메일
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Text(
+                                      //load name and show it
+                                      '${userdata['name']}',
+                                      style: TextStyle(
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    Text(
+                                      '${userdata['email']}',
+                                      style: TextStyle(
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              //rank system
+                              children: [
+                                Image.network(
+                                    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQiS3ZUuPNHJR0eRIQIDT2C5pa-ywIejAj4abLKe5fQ&s',
+                                    width: 50),
+                                Text(
+                                  _userRank,
+                                  style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            )
+                          ],
+                        ),
                       ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        //rank system
+                      Row(
                         children: [
-                          Image.network(
-                              'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQiS3ZUuPNHJR0eRIQIDT2C5pa-ywIejAj4abLKe5fQ&s',
-                              width: 50),
-                          Text(
-                            _userRank,
-                            style: TextStyle(
-                                fontSize: 15, fontWeight: FontWeight.bold),
-                          ),
+                          TextButton(
+                              onPressed: () async {
+                                var userdata =
+                                    await getUserData() as Map<String, dynamic>;
+                                print(userdata['name']);
+                              },
+                              child: Text('test'))
                         ],
                       )
                     ],
                   ),
                 ),
-                Row(
-                  children: [
-                    TextButton(
-                        onPressed: () async {
-                          print(userinfo.then((value) => value.data()));
-                          // print(a['name']);
-                        },
-                        child: Text('test'))
-                  ],
-                )
-              ],
-            ),
-          ),
+              );
+            }
+          },
         ),
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: 2, // 현재 선택된 페이지

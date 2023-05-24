@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:life_research/Auth/PhoneAuth.dart';
+import 'package:life_research/Auth/phone_auth.dart';
 //pages
-import 'package:life_research/Auth/RegisterPage.dart';
+import 'package:life_research/Auth/register_page.dart';
 import 'package:life_research/MainPage/MainPage.dart'; // 메인페이지로 이동
 //plugins
 import 'package:firebase_auth/firebase_auth.dart'; // 사용자 인증
 import 'package:cloud_firestore/cloud_firestore.dart'; // 데이터베이스
 import 'package:google_sign_in/google_sign_in.dart'; // 구글 로그인
+import 'package:firebase_storage/firebase_storage.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -19,7 +20,8 @@ class _LoginPageState extends State<LoginPage> {
   // 컨트롤러 추가
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  FirebaseFirestore userDB = FirebaseFirestore.instance; // 유저정보 데이터베이스
+  final FirebaseFirestore userDB = FirebaseFirestore.instance; // 유저정보 데이터베이스
+  final storage = FirebaseStorage.instance; // 유저 프로플 사진 데이터베이스
   late String baseUserUid; // 로그인한 유저의 uid
 
   Future<void> loginUser() async {
