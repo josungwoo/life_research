@@ -19,7 +19,7 @@ class _ProfilePageState extends State<ProfilePage> {
   late int _selectedIndex; // 현재 선택된 페이지
   final References = FirebaseStorage.instance;
 
-  final _userRank = 'unRanked';
+  final _userRank = 'Lv.0';
 
   @override
   void initState() {
@@ -36,14 +36,6 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   //========================프로필start========================
-  Future<dynamic> downloadURLExample() async {
-    String downloadURL = await References.ref(
-            'users/${FirebaseAuth.instance.currentUser!.uid.toString()}/profileImage')
-        .getDownloadURL();
-    print(downloadURL);
-    return downloadURL;
-  }
-
   Widget _profile_image(url) {
     return Container(
       width: 100,
@@ -52,7 +44,7 @@ class _ProfilePageState extends State<ProfilePage> {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         image: DecorationImage(
-            fit: BoxFit.fill,
+            fit: BoxFit.cover,
             // 프로필 이미지 설정에 따른 변화
             image: NetworkImage(url)),
       ),
@@ -135,18 +127,8 @@ class _ProfilePageState extends State<ProfilePage> {
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
                                 //profile 설정에 따른 이미지 변화 함수
-                                FutureBuilder(
-                                  future: downloadURLExample(),
-                                  builder: (context, snapshot) {
-                                    if (snapshot.hasData) {
-                                      return _profile_image(snapshot.data);
-                                    } else {
-                                      return Center(
-                                          child: CircularProgressIndicator());
-                                    }
-                                  },
-                                ),
 
+                                _profile_image(userdata['profileUrl']),
                                 //이름과 이메일
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -175,8 +157,9 @@ class _ProfilePageState extends State<ProfilePage> {
                               //rank system
                               children: [
                                 Image.network(
-                                    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQiS3ZUuPNHJR0eRIQIDT2C5pa-ywIejAj4abLKe5fQ&s',
-                                    width: 50),
+                                  'https://cdn.pixabay.com/photo/2021/03/27/05/16/chicken-6127516_1280.png',
+                                  width: 50,
+                                ),
                                 Text(
                                   _userRank,
                                   style: TextStyle(
@@ -188,17 +171,75 @@ class _ProfilePageState extends State<ProfilePage> {
                           ],
                         ),
                       ),
-                      Row(
-                        children: [
-                          TextButton(
-                              onPressed: () async {
-                                var userdata =
-                                    await getUserData() as Map<String, dynamic>;
-                                print(userdata['name']);
-                              },
-                              child: Text('test'))
-                        ],
-                      )
+                      //========================프로필end=======================
+                      //========================커뮤니티start========================
+                      Container(
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: Colors.grey,
+                              width: 1.0,
+                            )),
+                        margin: EdgeInsets.fromLTRB(
+                            (MediaQuery.of(context).size.width) / 10,
+                            10,
+                            (MediaQuery.of(context).size.width) / 10,
+                            0),
+                        padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Column(
+                              children: [
+                                Text(
+                                  '게시글',
+                                  style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Text(
+                                  '0',
+                                  style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            ),
+                            Column(
+                              children: [
+                                Text(
+                                  '댓글',
+                                  style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Text(
+                                  '0',
+                                  style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            ),
+                            Column(
+                              children: [
+                                Text(
+                                  '좋아요',
+                                  style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Text(
+                                  '0',
+                                  style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),

@@ -46,7 +46,7 @@ User/uid/
   final _birthDayKey = GlobalKey<FormState>();
   final _genderKey = GlobalKey<FormState>();
   FirebaseFirestore userDB = FirebaseFirestore.instance; // 유저 DB
-  final storageRef = FirebaseStorage.instance.ref();
+  final storageRef = FirebaseStorage.instance;
 
   final ImagePicker _picker = ImagePicker();
   XFile? _pickedImage;
@@ -56,6 +56,14 @@ User/uid/
     super.initState();
     _phoneNumber = widget.myPhoneNumber;
   }
+
+  // Future<dynamic> downloadURLExample() async {
+  //   String downloadURL = await storageRef
+  //       .ref('users/${widget.baseUserUid.toString()}/profileImage')
+  //       .getDownloadURL();
+  //   print(downloadURL);
+  //   return downloadURL;
+  // }
 
   _getPhotoLibraryImage() async {
     final pickedFile =
@@ -296,7 +304,6 @@ User/uid/
                 ),
                 TextButton(
                     onPressed: () async {
-                      print(FirebaseAuth.instance.currentUser!.uid);
                       //TODO: 디버깅용
                     },
                     child: const Text('debug'))
@@ -315,6 +322,7 @@ User/uid/
                         final birthdayState = _birthDayKey.currentState!;
                         final genderState = _genderKey.currentState!;
                         final profileImagesRef = storageRef
+                            .ref()
                             .child("users/${widget.baseUserUid}/profileImage");
                         File image = _pickedImage == null
                             ? await getImageFileFromAssets(
@@ -325,6 +333,8 @@ User/uid/
                             nickState.validate() &&
                             birthdayState.validate() &&
                             genderState.validate()) {
+                          await profileImagesRef.putFile(image);
+
                           await userDB
                               .collection("users")
                               .doc(widget.baseUserUid)
@@ -335,9 +345,9 @@ User/uid/
                             'birthDay': _birthDay.text, // 생년월일
                             'gender': _selectedGender, // 성별
                             'phoneNumber': _phoneNumber, // 휴대폰 번호
+                            'profileUrl':
+                                await profileImagesRef.getDownloadURL(),
                           });
-
-                          await profileImagesRef.putFile(image);
 
                           await FirebaseAuth.instance.currentUser!.delete();
                           if (FirebaseAuth.instance.currentUser == null) {

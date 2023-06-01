@@ -9,6 +9,8 @@ class NewPostPage extends StatefulWidget {
 
 class _NewPostPageState extends State<NewPostPage> {
   dynamic category = ['QnA', 'Tips', 'Free'];
+  final myScrollController = ScrollController();
+
   var defaultCategory;
   //화면의 가로길이
 
@@ -144,22 +146,18 @@ class _NewPostPageState extends State<NewPostPage> {
                     ),
                   ),
                   Expanded(
-                    child: Container(
-                      //width = 화면의 가로 길이
-                      width: MediaQuery.of(context).size.width,
-                      decoration: const BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(
-                            color: Colors.grey,
-                            width: 1.0,
+                    child: Scrollbar(
+                      controller: myScrollController,
+                      child: Container(
+                        //width = 화면의 가로 길이
+                        width: MediaQuery.of(context).size.width,
+                        decoration: const BoxDecoration(),
+                        child: const TextField(
+                          maxLines: null,
+                          decoration: InputDecoration(
+                            hintText: '내용을 입력해 주세요\n\n\n',
+                            border: InputBorder.none,
                           ),
-                        ),
-                      ),
-                      child: const TextField(
-                        maxLines: null,
-                        decoration: InputDecoration(
-                          hintText: '내용을 입력해 주세요',
-                          border: InputBorder.none,
                         ),
                       ),
                     ),
@@ -195,3 +193,15 @@ class _NewPostPageState extends State<NewPostPage> {
     );
   }
 }
+
+
+/*
+게시물 작성
+이미지 추가시 하단에 추가된 이미지들이 스택 형식으로 쌓이도록 한다, 많이 추가되면 스크롤 가능하도록
+이미지 추가시 이미지를 누르면 삭제 가능하도록 한다
+이미지 추가시 이미지를 꾹 누르면 이미지를 크게 볼 수 있도록 한다
+
+
+
+
+*/
